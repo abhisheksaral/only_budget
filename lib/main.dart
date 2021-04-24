@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:grouped_list/grouped_list.dart';
 import 'package:hovering/hovering.dart';
+import 'package:only_budget/widgets/transactions_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -139,14 +141,22 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             flex: 3,
               child: Container(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
-                  child: Text('Recent expenses',
-                    style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w500
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 0, 10),
+                      child: Text('Recent expenses',
+                        style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w500
+                        ),
+                      ),
                     ),
-                  ),
+                    Expanded(
+                        child: TransactionList(),
+                    )
+                  ],
                 ),
               )
           )
