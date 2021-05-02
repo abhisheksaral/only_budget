@@ -21,6 +21,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  syncfusion_flutter_charts: ^19.1.58
   flutter:
     sdk: flutter
 
