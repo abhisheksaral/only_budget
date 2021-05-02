@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:grouped_list/grouped_list.dart';
-import 'package:hovering/hovering.dart';
 import 'package:only_budget/widgets/transactions_list.dart';
 
 void main() {
@@ -13,7 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Only Budget',
       theme: ThemeData(
         brightness: Brightness.dark,
         canvasColor: Colors.grey[900],
@@ -109,25 +107,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                        Spacer(),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 20, 15, 0),
-                          child: HoverButton(
-                            color: Colors.grey[50],
-                            onpressed: () { print('Add Button Clicked'); },
-                            child: Icon(
-                              Icons.add,
-                              size: 35,
-                              color: Colors.grey[850],
-                            ),
-                            height: 60,
-                            minWidth: 130,
-                            shape: StadiumBorder(),
-                            hoverColor: Color.fromRGBO(32, 148, 243, 0.3),
-                            hoverElevation: 20,
-
-                          )
-                        )
                       ],
                     )
                   ],
@@ -141,23 +120,7 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             flex: 3,
               child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 0, 10),
-                      child: Text('Recent expenses',
-                        style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w500
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                        child: TransactionList(),
-                    )
-                  ],
-                ),
+                child: TransactionList(),
               )
           )
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hovering/hovering.dart';
 import 'package:only_budget/models/transaction_model.dart';
 
 class TransactionList extends StatefulWidget {
@@ -11,7 +12,7 @@ class _TransactionListState extends State<TransactionList> {
   List<Widget> _transactionTiles = [];
   final _listKey = GlobalKey<AnimatedListState>();
 
-  void _addTransactions() {
+  _addTransactions() {
     List<Transaction> _transactions = [
       Transaction(
           title: 'Xfinity Charges',
@@ -25,10 +26,12 @@ class _TransactionListState extends State<TransactionList> {
       _transactionTiles.add(_buildTile(transaction));
       _listKey.currentState.insertItem(_transactionTiles.length - 1);
     });
-    
   }
 
   Widget _buildTile(Transaction transaction) {
+
+
+
     return ListTile(
       onTap: () {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => Details(trip: trip)));
@@ -49,7 +52,7 @@ class _TransactionListState extends State<TransactionList> {
           borderRadius: BorderRadius.circular(7),
           color: Colors.deepPurpleAccent,
         ),
-        child: transaction.icon,
+        child: transaction.icon != null ? transaction.icon: Icon(Icons.attach_money),
       ),
       trailing: Text(
         '\$${transaction.amount}',
@@ -57,7 +60,6 @@ class _TransactionListState extends State<TransactionList> {
       ),
     );
   }
-
 
   @override
   void initState() {
@@ -72,14 +74,65 @@ class _TransactionListState extends State<TransactionList> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedList(
-        key: _listKey,
-        initialItemCount: _transactionTiles.length,
-        itemBuilder: (context, index, animation) {
-          return SlideTransition(
-            position: animation.drive(_offset),
-            child: _transactionTiles[index],
-          );
-        });
+    var screenSize = MediaQuery.of(context).size;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
+              child: Text('Recent expenses',
+                style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w500
+                ),
+              ),
+            ),
+            Spacer(),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(0, 20, 15, 0),
+                child: HoverButton(
+                  color: Colors.grey[50],
+                  onpressed: () => showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          content: Container(
+                            height: screenSize.height/2,
+                            width: screenSize.width/2,
+                          ),
+                        );
+                      }
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    size: 35,
+                    color: Colors.grey[850],
+                  ),
+                  height: 60,
+                  minWidth: 130,
+                  shape: StadiumBorder(),
+                  hoverColor: Color.fromRGBO(32, 148, 243, 0.3),
+                  hoverElevation: 20,
+
+                )
+            )
+          ],
+        ),
+        Expanded(
+          child: AnimatedList(
+              key: _listKey,
+              initialItemCount: _transactionTiles.length,
+              itemBuilder: (context, index, animation) {
+                return SlideTransition(
+                  position: animation.drive(_offset),
+                  child: _transactionTiles[index],
+                );
+              }),
+        )
+      ],
+    );
   }
 }
