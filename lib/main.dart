@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hovering/hovering.dart';
 import 'package:only_budget/widgets/transactions_list.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
