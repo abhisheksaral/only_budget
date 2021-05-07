@@ -120,24 +120,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           Spacer(),
-                          Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 20, 15, 0),
-                              child: HoverButton(
-                                color: Colors.grey[50],
-                                onpressed: () { print('Add Button Clicked'); },
-                                child: Icon(
-                                  Icons.add,
-                                  size: 35,
-                                  color: Colors.grey[850],
-                                ),
-                                height: 60,
-                                minWidth: 130,
-                                shape: StadiumBorder(),
-                                hoverColor: Color.fromRGBO(32, 148, 243, 0.3),
-                                hoverElevation: 20,
-
-                              )
-                          )
                         ],
                       ),
 
