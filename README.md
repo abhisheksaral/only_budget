@@ -20,5 +20,9 @@ samples, guidance on mobile development, and a full API reference.
 -Team Members: Denise Gip - 011977381, Abhishek Saral - 011813061, Richard Arcangel - 014197573 <br/>
 -Project Introduction: Our group decided to make a web based expense tracker. A user is able to input their expenses and will be stored into a database. The user can also group items together and produce simple bar graphs based on their input.
 -Sample Screenshots: <br/>
-
+<br/>
 ![alt text](https://cdn.discordapp.com/attachments/811063315618332715/838292693482340393/Screen_Shot_2021-05-01_at_10.54.07_PM.png)
+<br/>
+-Folder Structure: <br/>
+-Instructions: <br/>
+-System Diagram: 
