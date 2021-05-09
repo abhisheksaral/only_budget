@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hovering/hovering.dart';
 import 'package:only_budget/models/transaction_model.dart';
 import 'package:http/http.dart' as http;
@@ -14,13 +15,18 @@ class _TransactionListState extends State<TransactionList> {
 
   List<Widget> _transactionTiles = [];
   final _listKey = GlobalKey<AnimatedListState>();
+  final titleInput = TextEditingController();
+  final categoryInput = TextEditingController();
+  double amountInput;
 
-  void saveExpense() async {
 
+  void saveExpense(String title, String category, double amount) async {
+    DateTime now = DateTime.now();
     var transaction = Transaction(
-        title: "PS Plus",
-        category: "Subscription",
-        amount: 9.95
+        title: title,
+        category: category,
+        amount: amount,
+        date: now
     );
 
     var headers = {
@@ -28,13 +34,16 @@ class _TransactionListState extends State<TransactionList> {
       'Access-Control-Allow-Origin': '*'
     };
     var request = http.Request('POST', Uri.parse('http://localhost:8083/expense'));
-    request.body = '''{\r\n    "title": "Apple Store",\r\n    "category": "Shopping",\r\n    "amount": 300.2,\r\n    "date": "05/03/2021"\r\n}''';
+    request.body = '''{\r\n    "title": "${title}",\r\n    "category": "${category}",\r\n    "amount": ${amount},\r\n    "date": "${now.toString()}"\r\n}''';
     request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
+      _transactionTiles.add(_buildTile(transaction));
+      _listKey.currentState.insertItem(_transactionTiles.length - 1);
       print(await response.stream.bytesToString());
+      Navigator.of(context).pop();
     }
     else {
       print(response.reasonPhrase);
@@ -57,7 +66,7 @@ class _TransactionListState extends State<TransactionList> {
       _listKey.currentState.insertItem(_transactionTiles.length - 1);
     }
     else {
-    print(response.reasonPhrase);
+      print(response.reasonPhrase);
     }
   }
 
@@ -105,8 +114,8 @@ class _TransactionListState extends State<TransactionList> {
         child: transaction.icon != null ? transaction.icon: Icon(Icons.attach_money),
       ),
       trailing: Text(
-        '\$${transaction.amount}',
-        style: TextStyle(fontSize: 18, color: Colors.amberAccent)
+          '\$${transaction.amount}',
+          style: TextStyle(fontSize: 18, color: Colors.amberAccent)
       ),
     );
   }
@@ -145,7 +154,119 @@ class _TransactionListState extends State<TransactionList> {
                 padding: const EdgeInsets.fromLTRB(0, 20, 15, 0),
                 child: HoverButton(
                   color: Colors.grey[50],
-                  onpressed: () => getExpense(),
+                  onpressed: () => showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          content: Container(
+                            height: screenSize.height/2,
+                            width: screenSize.width/2,
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 120,
+                                      child: Text('Title',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        child: TextField(
+                                          controller: titleInput,
+                                          decoration: InputDecoration(
+                                            hintText: 'e.g. Netflix, Internet Charges, Walmart'
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 120,
+                                      child: Text('Category',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        child: TextField(
+                                          controller: categoryInput,
+                                          decoration: InputDecoration(
+                                              hintText: 'e.g. Utility Charges, Shopping, Grocery'
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 120,
+                                      child: Text('Amount',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        child: TextField(
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                          decoration: InputDecoration(
+                                              hintText: 'e.g. 11.4, 55'
+                                          ),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              amountInput = double.parse(value);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            print(titleInput.text);
+                                            print(categoryInput.text);
+                                            print(amountInput);
+
+                                            saveExpense(titleInput.text, categoryInput.text, amountInput);
+
+                                          },
+                                          child: Text('Save Expense'),
+                                          style: ElevatedButton.styleFrom(
+                                            minimumSize: Size(200,50)
+                                          ),
+                                        )
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                  ),
                   child: Icon(
                     Icons.add,
                     size: 35,
