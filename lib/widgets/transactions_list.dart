@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hovering/hovering.dart';
 import 'package:only_budget/models/transaction_model.dart';
+import 'package:http/http.dart' as http;
 
 class TransactionList extends StatefulWidget {
   @override
@@ -11,6 +14,53 @@ class _TransactionListState extends State<TransactionList> {
 
   List<Widget> _transactionTiles = [];
   final _listKey = GlobalKey<AnimatedListState>();
+
+  void saveExpense() async {
+
+    var transaction = Transaction(
+        title: "PS Plus",
+        category: "Subscription",
+        amount: 9.95
+    );
+
+    var headers = {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    };
+    var request = http.Request('POST', Uri.parse('http://localhost:8083/expense'));
+    request.body = '''{\r\n    "title": "Apple Store",\r\n    "category": "Shopping",\r\n    "amount": 300.2,\r\n    "date": "05/03/2021"\r\n}''';
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+    }
+    else {
+      print(response.reasonPhrase);
+    }
+
+  }
+
+  void getExpense() async {
+    var request = http.Request('GET', Uri.parse('http://localhost:8083/expense/62c12a74-5318-4042-96d9-ab13393abf6a'));
+    request.body = '''''';
+
+    http.StreamedResponse streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      var jsonData = json.decode(response.body);
+      Transaction a = Transaction(title: jsonData['title'], category: jsonData['category'], amount: jsonData['amount'], icon: Icon(Icons.shopping_cart_outlined));
+      _transactionTiles.add(_buildTile(a));
+      _listKey.currentState.insertItem(_transactionTiles.length - 1);
+    }
+    else {
+    print(response.reasonPhrase);
+    }
+  }
+
 
   _addTransactions() {
     List<Transaction> _transactions = [
@@ -95,17 +145,7 @@ class _TransactionListState extends State<TransactionList> {
                 padding: const EdgeInsets.fromLTRB(0, 20, 15, 0),
                 child: HoverButton(
                   color: Colors.grey[50],
-                  onpressed: () => showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          content: Container(
-                            height: screenSize.height/2,
-                            width: screenSize.width/2,
-                          ),
-                        );
-                      }
-                  ),
+                  onpressed: () => getExpense(),
                   child: Icon(
                     Icons.add,
                     size: 35,
