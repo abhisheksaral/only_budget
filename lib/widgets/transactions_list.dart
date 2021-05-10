@@ -52,7 +52,7 @@ class _TransactionListState extends State<TransactionList> {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*'
     };
-    var request = http.Request('POST', Uri.parse('http://localhost:8083/expense'));
+    var request = http.Request('POST', Uri.parse('http://expensetrackerapi-env.eba-bxptibyw.us-east-1.elasticbeanstalk.com/expense'));
     request.body = '''{\r\n    "title": "${title}",\r\n    "category": "${category}",\r\n    "amount": ${amount},\r\n    "date": "${now.toString()}"\r\n}''';
     request.headers.addAll(headers);
 
