@@ -32,6 +32,7 @@ dependencies:
   hovering: ^1.0.4
   grouped_list: ^4.0.0
   http: ^0.12.2
+  select_form_field: ^2.0.0
 
 dev_dependencies:
   flutter_test:

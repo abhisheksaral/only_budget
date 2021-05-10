@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:hovering/hovering.dart';
 import 'package:only_budget/models/transaction_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:select_form_field/select_form_field.dart';
 
 class TransactionList extends StatefulWidget {
   @override
@@ -20,13 +21,31 @@ class _TransactionListState extends State<TransactionList> {
   double amountInput;
 
 
+  List<Transaction> _transactions = [];
+
+
   void saveExpense(String title, String category, double amount) async {
+
+    Icon icon;
+    if (category == 'Utility Charges') {
+      icon = Icon(Icons.electrical_services_outlined);
+    } else if (category == 'Shopping') {
+      icon = Icon(Icons.shopping_cart_outlined);
+    } else if (category == 'Grocery') {
+      icon = Icon(Icons.dinner_dining);
+    } else if (category == 'Others') {
+      icon = Icon(Icons.attach_money);
+    } else if (category == 'Subscription') {
+      icon = Icon(Icons.receipt_long);
+    }
+
     DateTime now = DateTime.now();
     var transaction = Transaction(
         title: title,
         category: category,
         amount: amount,
-        date: now
+        date: now,
+        icon: icon
     );
 
     var headers = {
@@ -42,6 +61,7 @@ class _TransactionListState extends State<TransactionList> {
     if (response.statusCode == 200) {
       _transactionTiles.add(_buildTile(transaction));
       _listKey.currentState.insertItem(_transactionTiles.length - 1);
+      titleInput.clear();
       print(await response.stream.bytesToString());
       Navigator.of(context).pop();
     }
@@ -72,14 +92,7 @@ class _TransactionListState extends State<TransactionList> {
 
 
   _addTransactions() {
-    List<Transaction> _transactions = [
-      Transaction(
-          title: 'Xfinity Charges',
-          amount: 200.02,
-          category: 'Utility Charges',
-          icon: Icon(Icons.receipt_long)
-      ),
-    ];
+
 
     _transactions.forEach((Transaction transaction) {
       _transactionTiles.add(_buildTile(transaction));
@@ -88,8 +101,6 @@ class _TransactionListState extends State<TransactionList> {
   }
 
   Widget _buildTile(Transaction transaction) {
-
-
 
     return ListTile(
       onTap: () {
@@ -123,13 +134,55 @@ class _TransactionListState extends State<TransactionList> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _addTransactions();
-    });
-
+      _controller = TextEditingController(text: 'Utility Charges');
+      _getValue();
   }
 
   Tween<Offset> _offset = Tween(begin: Offset(1, 0), end: Offset(0, 0));
+
+  TextEditingController _controller;
+  //String _initialValue;
+  String _valueChanged = '';
+  String _valueToValidate = '';
+  String _valueSaved = '';
+
+  GlobalKey<FormState> _oFormKey = GlobalKey<FormState>();
+  final List<Map<String, dynamic>> _items = [
+    {
+      'value': 'Utility Charges',
+      'label': 'Utility Charges',
+      'icon': Icon(Icons.electrical_services_outlined),
+    },
+    {
+      'value': 'Shopping',
+      'label': 'Shopping',
+      'icon': Icon(Icons.shopping_cart_outlined),
+    },
+    {
+      'value': 'Grocery',
+      'label': 'Grocery',
+      'icon': Icon(Icons.dinner_dining),
+    },
+    {
+      'value': 'Others',
+      'label': 'Others',
+      'icon': Icon(Icons.attach_money),
+    },
+    {
+      'value': 'Subscription',
+      'label': 'Subscription',
+      'icon': Icon(Icons.receipt_long),
+    },
+  ];
+
+  Future<void> _getValue() async {
+    await Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        //_initialValue = 'circleValue';
+        _controller?.text = 'circleValue';
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,13 +252,22 @@ class _TransactionListState extends State<TransactionList> {
                                       ),
                                     ),
                                     Expanded(
-                                      child: Container(
-                                        child: TextField(
-                                          controller: categoryInput,
-                                          decoration: InputDecoration(
-                                              hintText: 'e.g. Utility Charges, Shopping, Grocery'
-                                          ),
-                                        ),
+                                      child: SelectFormField(
+                                        //type: SelectFormFieldType.dialog,
+                                        //initialValue: _initialValue,
+                                        icon: Icon(Icons.format_shapes),
+                                        changeIcon: true,
+                                        dialogTitle: 'Pick a category',
+                                        dialogCancelBtn: 'CANCEL',
+                                        enableSearch: true,
+                                        dialogSearchHint: 'Search item',
+                                        items: _items,
+                                        onChanged: (val) => setState(() => _valueChanged = val),
+                                        validator: (val) {
+                                          setState(() => _valueToValidate = val ?? '');
+                                          return null;
+                                        },
+                                        onSaved: (val) => setState(() => _valueSaved = val ?? ''),
                                       ),
                                     )
                                   ],
@@ -247,10 +309,9 @@ class _TransactionListState extends State<TransactionList> {
                                         child: ElevatedButton(
                                           onPressed: () {
                                             print(titleInput.text);
-                                            print(categoryInput.text);
+                                            print(_valueChanged);
                                             print(amountInput);
-
-                                            saveExpense(titleInput.text, categoryInput.text, amountInput);
+                                            saveExpense(titleInput.text, _valueChanged, amountInput);
 
                                           },
                                           child: Text('Save Expense'),
@@ -260,7 +321,7 @@ class _TransactionListState extends State<TransactionList> {
                                         )
                                     )
                                   ],
-                                )
+                                ),
                               ],
                             ),
                           ),

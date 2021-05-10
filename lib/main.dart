@@ -204,15 +204,6 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 20, 0, 10),
-                        child: Text('Recent expenses',
-                          style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w500
-                          ),
-                        ),
-                      ),
                       Expanded(
                         child: TransactionList(),
                       )
