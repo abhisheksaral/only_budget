@@ -16,6 +16,17 @@ CMPE 172 - Spring 2021
 - Frontend
 - Backend
 - Scripts
+  - Build/Setup ([Flutter Setup Guide](https://flutter.dev/docs/get-started/install))
+    ```cmd
+    git clone https://github.com/flutter/flutter.git -b stable
+    npm install -g firebase-tools
+    ```
+  - Run/Deploy
+    ```cmd
+    C:\src\flutter>flutter run -d chrome
+    firebase init
+    firebase deploy
+    ```
 
 ### Instructions
 Download all files from Github and run locally on your computer using an IntelliJ, Android Studio, or Xcode.
